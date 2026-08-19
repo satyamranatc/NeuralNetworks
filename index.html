@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neural Networks — From y = mx + b to Deep Learning</title>
+  <meta name="description" content="A beautifully crafted visual guide to understanding neural networks, starting from simple linear regression to deep learning architectures." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS
+       ═══════════════════════════════════════════════ */
+    :root {
+      /* Background & Surface */
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
+      --bg-tertiary: #111111;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-card-hover: rgba(255, 255, 255, 0.06);
+      --bg-code: rgba(255, 255, 255, 0.04);
+      --bg-table-header: rgba(255, 255, 255, 0.06);
+      --bg-table-row: rgba(255, 255, 255, 0.02);
+
+      /* Text */
+      --text-primary: #f5f5f7;
+      --text-secondary: rgba(245, 245, 247, 0.7);
+      --text-tertiary: rgba(245, 245, 247, 0.45);
+      --text-code: #e8e8ed;
+
+      /* Accent */
+      --accent-blue: #2997ff;
+      --accent-purple: #bf5af2;
+      --accent-green: #30d158;
+      --accent-orange: #ff9f0a;
+      --accent-pink: #ff375f;
+      --accent-teal: #64d2ff;
+      --accent-indigo: #5e5ce6;
+
+      /* Gradient */
+      --gradient-hero: linear-gradient(135deg, #2997ff 0%, #bf5af2 50%, #ff375f 100%);
+      --gradient-blue-purple: linear-gradient(135deg, #2997ff, #bf5af2);
+      --gradient-purple-pink: linear-gradient(135deg, #bf5af2, #ff375f);
+      --gradient-green-teal: linear-gradient(135deg, #30d158, #64d2ff);
+
+      /* Borders */
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-card: rgba(255, 255, 255, 0.06);
+
+      /* Shadows */
+      --shadow-card: 0 2px 20px rgba(0, 0, 0, 0.4);
+      --shadow-glow-blue: 0 0 60px rgba(41, 151, 255, 0.15);
+      --shadow-glow-purple: 0 0 60px rgba(191, 90, 242, 0.15);
+
+      /* Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      /* Spacing */
+      --section-gap: 160px;
+      --content-max: 720px;
+      --page-padding: 24px;
+
+      /* Typography */
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════════ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      font-size: 17px;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(41, 151, 255, 0.3);
+      color: #fff;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0 var(--page-padding);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      background: rgba(0, 0, 0, 0.72);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: all 0.3s ease;
+    }
+
+    .nav-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo .logo-icon {
+      width: 22px;
+      height: 22px;
+      background: var(--gradient-hero);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: var(--gradient-hero);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ═══════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px var(--page-padding) 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(41, 151, 255, 0.08) 0%, rgba(191, 90, 242, 0.04) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      max-width: 800px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .gradient-text {
+      background: var(--gradient-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(17px, 2.2vw, 21px);
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.6;
+      font-weight: 400;
+      margin-bottom: 48px;
+    }
+
+    .hero-equation {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--accent-blue);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-glow-blue);
+    }
+
+    .hero-equation .arrow {
+      color: var(--text-tertiary);
+      font-size: 16px;
+    }
+
+    .hero-equation .fn {
+      color: var(--accent-purple);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-scroll-hint .scroll-line {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--text-tertiary), transparent);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       CONTENT SECTIONS
+       ═══════════════════════════════════════════════ */
+    .content {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 0 var(--page-padding);
+    }
+
+    .section {
+      padding-top: var(--section-gap);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      font-family: var(--font-mono);
+    }
+
+    .section-number.blue { background: rgba(41, 151, 255, 0.12); color: var(--accent-blue); }
+    .section-number.purple { background: rgba(191, 90, 242, 0.12); color: var(--accent-purple); }
+    .section-number.green { background: rgba(48, 209, 88, 0.12); color: var(--accent-green); }
+    .section-number.orange { background: rgba(255, 159, 10, 0.12); color: var(--accent-orange); }
+    .section-number.pink { background: rgba(255, 55, 95, 0.12); color: var(--accent-pink); }
+    .section-number.teal { background: rgba(100, 210, 255, 0.12); color: var(--accent-teal); }
+    .section-number.indigo { background: rgba(94, 92, 230, 0.12); color: var(--accent-indigo); }
+
+    .section h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+
+    .section h3 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-top: 56px;
+      margin-bottom: 16px;
+    }
+
+    .section h4 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-top: 40px;
+      margin-bottom: 12px;
+    }
+
+    .section p {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .section ul, .section ol {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+
+    .section li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════
+       BLOCKQUOTE / CALLOUT
+       ═══════════════════════════════════════════════ */
+    .callout {
+      position: relative;
+      padding: 24px 28px;
+      margin: 32px 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .callout::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .callout.blue::before { background: var(--accent-blue); }
+    .callout.purple::before { background: var(--accent-purple); }
+    .callout.green::before { background: var(--accent-green); }
+    .callout.orange::before { background: var(--accent-orange); }
+    .callout.pink::before { background: var(--accent-pink); }
+
+    .callout strong {
+      color: var(--text-primary);
+    }
+
+    .callout code {
+      font-family: var(--font-mono);
+      color: var(--accent-blue);
+      font-size: 15px;
+      background: rgba(41, 151, 255, 0.08);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       CODE BLOCKS
+       ═══════════════════════════════════════════════ */
+    .code-block {
+      margin: 24px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-card);
+      background: var(--bg-code);
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .code-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .code-dots span:nth-child(1) { background: #ff5f57; }
+    .code-dots span:nth-child(2) { background: #febc2e; }
+    .code-dots span:nth-child(3) { background: #28c840; }
+
+    .code-label {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .code-block pre {
+      padding: 20px 24px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-code);
+      tab-size: 4;
+    }
+
+    .code-block pre .keyword { color: var(--accent-purple); }
+    .code-block pre .number { color: var(--accent-orange); }
+    .code-block pre .function { color: var(--accent-blue); }
+    .code-block pre .comment { color: var(--text-tertiary); font-style: italic; }
+    .code-block pre .string { color: var(--accent-green); }
+    .code-block pre .operator { color: var(--accent-pink); }
+
+    /* Inline code */
+    .section p code, .section li code {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      background: rgba(41, 151, 255, 0.08);
+      color: var(--accent-blue);
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TABLES
+       ═══════════════════════════════════════════════ */
+    .table-wrapper {
+      margin: 24px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-card);
+      overflow-x: auto;
+    }
+
+    .table-wrapper table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    .table-wrapper thead {
+      background: var(--bg-table-header);
+    }
+
+    .table-wrapper th {
+      padding: 14px 20px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-card);
+      white-space: nowrap;
+    }
+
+    .table-wrapper td {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-card);
+      color: var(--text-secondary);
+    }
+
+    .table-wrapper tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-wrapper tbody tr {
+      transition: background 0.2s;
+    }
+
+    .table-wrapper tbody tr:hover {
+      background: var(--bg-table-row);
+    }
+
+    .table-wrapper td code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-blue);
+      background: rgba(41, 151, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .table-wrapper td:first-child {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .table-wrapper td strong {
+      color: var(--text-primary);
+    }
+
+    /* ═══════════════════════════════════════════════
+       DIAGRAM / ASCII FLOW
+       ═══════════════════════════════════════════════ */
+    .diagram {
+      margin: 32px 0;
+      padding: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .diagram pre {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      display: inline-block;
+      text-align: left;
+    }
+
+    .diagram .highlight {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .diagram .accent-purple {
+      color: var(--accent-purple);
+    }
+
+    .diagram .accent-green {
+      color: var(--accent-green);
+    }
+
+    .diagram .accent-orange {
+      color: var(--accent-orange);
+    }
+
+    .diagram .accent-pink {
+      color: var(--accent-pink);
+    }
+
+    /* ═══════════════════════════════════════════════
+       VISUAL FLOW CARDS
+       ═══════════════════════════════════════════════ */
+    .flow-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 32px 0;
+    }
+
+    .flow-step {
+      padding: 16px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      text-align: center;
+      font-weight: 500;
+      font-size: 15px;
+      min-width: 200px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .flow-step:hover {
+      transform: scale(1.02);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .flow-step.accent {
+      border-color: rgba(41, 151, 255, 0.3);
+      background: rgba(41, 151, 255, 0.04);
+    }
+
+    .flow-step.accent-purple-bg {
+      border-color: rgba(191, 90, 242, 0.3);
+      background: rgba(191, 90, 242, 0.04);
+    }
+
+    .flow-step.accent-green-bg {
+      border-color: rgba(48, 209, 88, 0.3);
+      background: rgba(48, 209, 88, 0.04);
+    }
+
+    .flow-arrow {
+      width: 1px;
+      height: 28px;
+      background: var(--border-subtle);
+      position: relative;
+    }
+
+    .flow-arrow::after {
+      content: '▾';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    /* ═══════════════════════════════════════════════
+       COMPARISON COLUMNS
+       ═══════════════════════════════════════════════ */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .compare-card {
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+    }
+
+    .compare-card h4 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .compare-card pre {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    /* ═══════════════════════════════════════════════
+       LEVEL CARDS
+       ═══════════════════════════════════════════════ */
+    .level-progression {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 40px 0;
+    }
+
+    .level-card {
+      padding: 28px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      position: relative;
+    }
+
+    .level-card .level-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .level-card .level-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .level-card pre {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .level-connector {
+      width: 2px;
+      height: 32px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SECTION DIVIDER
+       ═══════════════════════════════════════════════ */
+    .divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin-top: var(--section-gap);
+    }
+
+    /* ═══════════════════════════════════════════════
+       FEATURE GRID
+       ═══════════════════════════════════════════════ */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .feature-card {
+      padding: 28px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-card);
+    }
+
+    .feature-card .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card .icon.blue { background: rgba(41, 151, 255, 0.12); }
+    .feature-card .icon.purple { background: rgba(191, 90, 242, 0.12); }
+    .feature-card .icon.green { background: rgba(48, 209, 88, 0.12); }
+    .feature-card .icon.orange { background: rgba(255, 159, 10, 0.12); }
+    .feature-card .icon.pink { background: rgba(255, 55, 95, 0.12); }
+    .feature-card .icon.teal { background: rgba(100, 210, 255, 0.12); }
+    .feature-card .icon.indigo { background: rgba(94, 92, 230, 0.12); }
+
+    .feature-card h4 {
+      margin-top: 0;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--text-tertiary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .feature-card .use-case {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════════════
+       INTERACTIVE VISUALIZATION
+       ═══════════════════════════════════════════════ */
+    .viz-container {
+      margin: 40px 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+    }
+
+    .viz-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .viz-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .viz-toggle {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px;
+      border-radius: 8px;
+    }
+
+    .viz-toggle button {
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .viz-toggle button.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .viz-body {
+      padding: 32px 24px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 240px;
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NETWORK VISUALIZATION
+       ═══════════════════════════════════════════════ */
+    .network-viz {
+      margin: 40px 0;
+      padding: 48px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .network-viz svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ACTIVATION CARDS
+       ═══════════════════════════════════════════════ */
+    .activation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .activation-card {
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .activation-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .activation-card h4 {
+      margin-top: 0;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .activation-card .formula {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+
+    .activation-card canvas {
+      height: 100px;
+      margin-bottom: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .activation-card .description {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════ */
+    .footer {
+      margin-top: var(--section-gap);
+      padding: 48px var(--page-padding);
+      text-align: center;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .footer-quote {
+      max-width: 700px;
+      margin: 0 auto 32px;
+      font-size: clamp(18px, 2.5vw, 22px);
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .footer-quote strong {
+      color: var(--text-primary);
+    }
+
+    .footer-meta {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    /* ═══════════════════════════════════════════════
+       INTERACTIVE RELU DEMO
+       ═══════════════════════════════════════════════ */
+    .relu-demo {
+      margin: 40px 0;
+      padding: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+    }
+
+    .relu-demo .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .relu-demo label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 90px;
+    }
+
+    .relu-demo input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .relu-demo input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(41, 151, 255, 0.3);
+    }
+
+    .relu-demo .output-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--accent-blue);
+      min-width: 50px;
+      text-align: right;
+    }
+
+    /* ═══════════════════════════════════════════════
+       HIERARCHY TREE
+       ═══════════════════════════════════════════════ */
+    .hierarchy {
+      margin: 32px 0;
+      padding: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+    }
+
+    .hierarchy-level {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .hierarchy-node {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hierarchy-connector {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      line-height: 1.8;
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      :root {
+        --section-gap: 100px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-equation {
+        font-size: 16px;
+        padding: 12px 20px;
+      }
+
+      .section h2 {
+        font-size: 28px;
+      }
+
+      .activation-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 16px;
+      }
+
+      .diagram {
+        padding: 20px 16px;
+      }
+
+      .diagram pre {
+        font-size: 12px;
+      }
+
+      .code-block pre {
+        font-size: 13px;
+        padding: 16px;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       SCROLLBAR
+       ═══════════════════════════════════════════════ */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Animation delay helpers */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+
+    /* Emphasis styling */
+    .text-gradient-blue {
+      background: var(--gradient-blue-purple);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ═══════════════════════════════════════════════
+       CANVAS CONTAINERS
+       ═══════════════════════════════════════════════ */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      margin: 24px 0;
+    }
+
+    .chart-container canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ NAVIGATION ═══════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <div class="logo-icon">N</div>
+        Neural Networks
+      </div>
+      <ul class="nav-links">
+        <li><a href="#s1">Linear Regression</a></li>
+        <li><a href="#s2">One Neuron</a></li>
+        <li><a href="#s3">Activation</a></li>
+        <li><a href="#s5">Layers</a></li>
+        <li><a href="#s12">Architectures</a></li>
+        <li><a href="#s17">Summary</a></li>
+      </ul>
+    </div>
+    <div class="nav-progress" id="navProgress"></div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="hero" id="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Interactive Visual Guide
+    </div>
+    <h1>
+      From <span class="gradient-text">y&nbsp;=&nbsp;mx&nbsp;+&nbsp;b</span><br />
+      to Deep Learning
+    </h1>
+    <p class="hero-subtitle">
+      A neural network is basically many <code>y = mx + b</code> calculations connected together,
+      with activation functions inserted between them.
+    </p>
+    <div class="hero-equation">
+      <span>y = mx + b</span>
+      <span class="arrow">→</span>
+      <span class="fn">activation()</span>
+      <span class="arrow">→</span>
+      <span>network</span>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll to explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </header>
+
+  <!-- ═══════════ CONTENT ═══════════ -->
+  <main class="content">
+
+    <!-- ═══════════ SECTION 1 ═══════════ -->
+    <section class="section" id="s1">
+      <div class="section-number blue">01</div>
+      <h2>What is traditional Machine&nbsp;Learning?</h2>
+      <p>
+        Suppose we want to predict someone's salary from their years of experience.
+        We have some data:
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Experience <code>x</code></th><th>Salary <code>y</code></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>30</td></tr>
+            <tr><td>2</td><td>40</td></tr>
+            <tr><td>3</td><td>50</td></tr>
+            <tr><td>4</td><td>60</td></tr>
+            <tr><td>5</td><td>70</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>A simple ML model can learn the formula:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">Linear Model</span>
+        </div>
+        <pre><span class="keyword">y</span> = <span class="number">m</span>x + <span class="number">b</span>
+
+<span class="comment">// It discovers:</span>
+<span class="number">m</span> = <span class="number">10</span>
+<span class="number">b</span> = <span class="number">20</span>
+
+<span class="comment">// So:</span>
+Salary = <span class="number">10</span> × Experience + <span class="number">20</span>
+
+<span class="comment">// For 6 years:</span>
+y = <span class="number">10</span>(<span class="number">6</span>) + <span class="number">20</span> = <span class="number">80</span></pre>
+      </div>
+
+      <p>This is <strong>linear regression</strong> — the simplest form of machine learning.</p>
+
+      <div class="callout blue">
+        The core idea is simple:<br />
+        <code>INPUT</code> → mathematical formula → <code>OUTPUT</code>
+      </div>
+
+      <!-- Interactive linear chart -->
+      <div class="viz-container">
+        <div class="viz-header">
+          <span class="viz-title">Linear Regression — Salary Prediction</span>
+        </div>
+        <div class="viz-body">
+          <div class="chart-container">
+            <canvas id="linearChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 2 ═══════════ -->
+    <section class="section" id="s2">
+      <div class="section-number purple">02</div>
+      <h2>So where does a Neural Network come in?</h2>
+      <p>
+        A single neuron starts with almost exactly the same idea.
+      </p>
+
+      <div class="flow-vertical">
+        <div class="flow-step">Input <code>x</code></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step accent"><code>z = mx + b</code></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step accent-purple-bg">Activation Function</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step accent-green-bg">Output <code>y</code></div>
+      </div>
+
+      <p>Mathematically:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">Single Neuron</span>
+        </div>
+        <pre><span class="keyword">z</span> = <span class="number">m</span>x + <span class="number">b</span>
+
+<span class="keyword">y</span> = <span class="function">activation</span>(<span class="keyword">z</span>)</pre>
+      </div>
+
+      <div class="callout purple">
+        <strong>The foundation is still <code>y = mx + b</code>.</strong><br />
+        That's an extremely important thing to understand.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 3 ═══════════ -->
+    <section class="section" id="s3">
+      <div class="section-number green">03</div>
+      <h2>Why isn't a Neural Network just Linear&nbsp;Regression?</h2>
+      <p>
+        Because of the <strong>activation function</strong>.
+      </p>
+      <p>Consider <code>z = 2x − 2</code>. Without activation, this produces a straight line. Now let's apply <strong>ReLU</strong>:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">ReLU Definition</span>
+        </div>
+        <pre><span class="function">ReLU</span>(x) = x       <span class="keyword">if</span> x > <span class="number">0</span>
+           <span class="number">0</span>       <span class="keyword">if</span> x ≤ <span class="number">0</span></pre>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>x</th><th><code>2x − 2</code></th><th>ReLU(<code>2x − 2</code>)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>-2</td><td>-6</td><td>0</td></tr>
+            <tr><td>-1</td><td>-4</td><td>0</td></tr>
+            <tr><td>0</td><td>-2</td><td>0</td></tr>
+            <tr><td>1</td><td>0</td><td>0</td></tr>
+            <tr><td>2</td><td>2</td><td>2</td></tr>
+            <tr><td>3</td><td>4</td><td>4</td></tr>
+            <tr><td>4</td><td>6</td><td>6</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The negative part has been <strong>flattened to zero</strong>. The shape is no longer a straight line — that's the beginning of <strong>non-linearity</strong>.</p>
+
+      <!-- Interactive ReLU visualization -->
+      <div class="viz-container">
+        <div class="viz-header">
+          <span class="viz-title">Linear vs ReLU — Interactive Comparison</span>
+          <div class="viz-toggle">
+            <button id="btnLinear" class="active" onclick="setVizMode('linear')">Linear</button>
+            <button id="btnRelu" onclick="setVizMode('relu')">ReLU</button>
+            <button id="btnBoth" onclick="setVizMode('both')">Both</button>
+          </div>
+        </div>
+        <div class="viz-body">
+          <div class="chart-container">
+            <canvas id="reluChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 4 ═══════════ -->
+    <section class="section" id="s4">
+      <div class="section-number orange">04</div>
+      <h2>Visual Intuition</h2>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4 style="color: var(--text-tertiary);">Without Activation</h4>
+          <pre style="font-family: var(--font-mono); font-size: 20px; line-height: 1.4; color: var(--accent-blue);">
+        /
+       /
+      /
+     /
+    /
+   /
+  /
+ /</pre>
+          <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 12px; margin-bottom: 0;">Just a straight line.</p>
+        </div>
+        <div class="compare-card">
+          <h4 style="color: var(--text-tertiary);">With ReLU</h4>
+          <pre style="font-family: var(--font-mono); font-size: 20px; line-height: 1.4; color: var(--accent-purple);">
+
+
+          /
+         /
+        /
+_______/
+
+</pre>
+          <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 12px; margin-bottom: 0;">There is now a <strong style="color: var(--accent-purple);">bend</strong>.</p>
+        </div>
+      </div>
+
+      <div class="callout green">
+        A neural network can combine thousands — even millions — of these simple bends to create extremely complicated shapes.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 5 ═══════════ -->
+    <section class="section" id="s5">
+      <div class="section-number pink">05</div>
+      <h2>Many Neurons, Many Layers</h2>
+      <p>
+        One neuron is relatively simple. The magic happens when we connect many neurons together into layers.
+      </p>
+
+      <p>Each neuron has its own <code>m</code> (weight) and <code>b</code> (bias):</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">Multiple Neurons</span>
+        </div>
+        <pre>Neuron 1 → <span class="number">m₁</span>x + <span class="number">b₁</span>
+Neuron 2 → <span class="number">m₂</span>x + <span class="number">b₂</span>
+Neuron 3 → <span class="number">m₃</span>x + <span class="number">b₃</span>
+
+<span class="comment">// Then activation is applied to each.</span>
+<span class="comment">// Then another layer does it again.</span></pre>
+      </div>
+
+      <!-- Neural network SVG visualization -->
+      <div class="network-viz" id="networkViz">
+        <svg viewBox="0 0 600 320" id="nnSvg">
+          <!-- Will be drawn by JS -->
+        </svg>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 16px; margin-bottom: 0;">
+          Each connection carries a weight. Each node applies: <code style="font-size: 12px;">z = w₁x₁ + w₂x₂ + ... + b</code> then <code style="font-size: 12px;">activation(z)</code>
+        </p>
+      </div>
+
+      <p>Each <strong>●</strong> is a neuron. Each neuron does:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">General Neuron</span>
+        </div>
+        <pre><span class="keyword">z</span> = w₁x₁ + w₂x₂ + w₃x₃ + <span class="number">b</span>
+<span class="keyword">output</span> = <span class="function">activation</span>(<span class="keyword">z</span>)</pre>
+      </div>
+
+      <p>It is still fundamentally <strong>multiplication + addition</strong>.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 7 ═══════════ -->
+    <section class="section" id="s7">
+      <div class="section-number teal">06</div>
+      <h2>Traditional ML vs Neural Networks</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Traditional ML</th><th>Neural Network</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Often uses simpler mathematical models</td>
+              <td>Uses many layers of mathematical operations</td>
+            </tr>
+            <tr>
+              <td>We manually create useful features</td>
+              <td>Can learn useful representations automatically</td>
+            </tr>
+            <tr>
+              <td>Usually fewer parameters</td>
+              <td>Can have millions/billions of parameters</td>
+            </tr>
+            <tr>
+              <td>Great on structured/tabular data</td>
+              <td>Powerful for images, audio, language</td>
+            </tr>
+            <tr>
+              <td>Linear Regression, Decision Trees</td>
+              <td>CNNs, RNNs, Transformers, MLPs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout orange">
+        <strong>Neural networks ARE machine learning.</strong> They're one family of ML algorithms — not separate from ML.
+      </div>
+
+      <div class="hierarchy">
+        <div class="hierarchy-level">
+          <div class="hierarchy-node" style="background: rgba(41, 151, 255, 0.1); color: var(--accent-blue);">Artificial Intelligence</div>
+        </div>
+        <div class="hierarchy-connector">│<br />▼</div>
+        <div class="hierarchy-level">
+          <div class="hierarchy-node" style="background: rgba(191, 90, 242, 0.1); color: var(--accent-purple);">Machine Learning</div>
+        </div>
+        <div class="hierarchy-connector">│<br />▼</div>
+        <div class="hierarchy-level">
+          <div class="hierarchy-node" style="background: rgba(48, 209, 88, 0.1); color: var(--accent-green);">Neural Networks</div>
+        </div>
+        <div class="hierarchy-connector">┌────────┼────────┐<br /></div>
+        <div class="hierarchy-level" style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <div class="hierarchy-node" style="background: rgba(255, 159, 10, 0.1); color: var(--accent-orange); font-size: 12px;">CNN</div>
+          <div class="hierarchy-node" style="background: rgba(255, 55, 95, 0.1); color: var(--accent-pink); font-size: 12px;">RNN</div>
+          <div class="hierarchy-node" style="background: rgba(100, 210, 255, 0.1); color: var(--accent-teal); font-size: 12px;">Transformer</div>
+          <div class="hierarchy-node" style="background: rgba(94, 92, 230, 0.1); color: var(--accent-indigo); font-size: 12px;">etc.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 8 ═══════════ -->
+    <section class="section" id="s8">
+      <div class="section-number indigo">07</div>
+      <h2>The biggest difference: Feature Learning</h2>
+      <p>Consider image recognition — detecting a cat.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4 style="color: var(--accent-orange);">Traditional ML</h4>
+          <p style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 0;">
+            You must manually create features:<br />
+            ear shape, eye size, fur texture, face shape, nose shape…
+          </p>
+        </div>
+        <div class="compare-card">
+          <h4 style="color: var(--accent-blue);">Neural Networks</h4>
+          <p style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 0;">
+            Learn representations automatically from raw pixels — edges → shapes → objects → cat.
+          </p>
+        </div>
+      </div>
+
+      <div class="flow-vertical">
+        <div class="flow-step" style="font-size: 14px;">📷 IMAGE</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step" style="font-size: 13px;">Early layers → edges, lines, corners</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step" style="font-size: 13px;">Middle layers → eyes, ears, shapes</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step" style="font-size: 13px;">Deep layers → cat-like representation</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-step accent-green-bg" style="font-size: 14px; font-weight: 600;">🐱 CAT = 95%</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 9 ═══════════ -->
+    <section class="section" id="s9">
+      <div class="section-number blue">08</div>
+      <h2>Why do we need multiple layers?</h2>
+      <p>Each layer builds on the previous one, finding progressively more complex patterns.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4 style="color: var(--accent-blue);">For Images</h4>
+          <div class="flow-vertical" style="margin: 16px 0 0;">
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">pixels</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">edges</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">shapes</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">eyes / ears / nose</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">face</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step accent" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">cat</div>
+          </div>
+        </div>
+        <div class="compare-card">
+          <h4 style="color: var(--accent-purple);">For Language</h4>
+          <div class="flow-vertical" style="margin: 16px 0 0;">
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">letters</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">words</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">phrases</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">meaning / context</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step accent-purple-bg" style="font-size: 13px; min-width: 160px; padding: 10px 20px;">answer</div>
+          </div>
+        </div>
+      </div>
+
+      <p>That's why it's called a <strong>deep</strong> neural network when there are many layers.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 10 ═══════════ -->
+    <section class="section" id="s10">
+      <div class="section-number purple">09</div>
+      <h2>The role of the Activation Function</h2>
+      <p>
+        If we <strong>remove activation functions</strong>, something surprising happens.
+        Even with many layers, the entire network reduces to a single linear equation:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-label">Without Activation</span>
+        </div>
+        <pre><span class="comment">// Even with many layers:</span>
+Linear → Linear → Linear → Linear
+
+<span class="comment">// Reduces to:</span>
+<span class="keyword">y</span> = <span class="number">m</span>x + <span class="number">b</span>
+
+<span class="comment">// Just another straight line!</span></pre>
+      </div>
+
+      <p>
+        Activation functions introduce <strong>non-linearity</strong> — that's what lets the network model
+        curves, complex boundaries, and complicated patterns instead of only straight lines.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 11 ═══════════ -->
+    <section class="section" id="s11">
+      <div class="section-number green">10</div>
+      <h2>Important Activation Functions</h2>
+
+      <div class="activation-grid">
+        <div class="activation-card">
+          <h4>ReLU</h4>
+          <div class="formula">max(0, x)</div>
+          <div class="chart-container" style="height: 120px;">
+            <canvas id="reluMini"></canvas>
+          </div>
+          <div class="description">Most common. Outputs x if positive, 0 otherwise. Used heavily inside networks.</div>
+        </div>
+        <div class="activation-card">
+          <h4>Sigmoid</h4>
+          <div class="formula">1 / (1 + e⁻ˣ)</div>
+          <div class="chart-container" style="height: 120px;">
+            <canvas id="sigmoidMini"></canvas>
+          </div>
+          <div class="description">Squashes values between 0 and 1. Great for binary probability outputs.</div>
+        </div>
+        <div class="activation-card">
+          <h4>Softmax</h4>
+          <div class="formula">eˣⁱ / Σeˣʲ</div>
+          <div class="chart-container" style="height: 120px;">
+            <canvas id="softmaxMini"></canvas>
+          </div>
+          <div class="description">Multi-class classification. Outputs probabilities that sum to 1.0.</div>
+        </div>
+      </div>
+
+      <!-- Interactive ReLU demo -->
+      <div class="relu-demo">
+        <h4 style="margin-bottom: 20px; font-size: 15px; color: var(--text-secondary);">Try it — Interactive ReLU</h4>
+        <div class="slider-row">
+          <label>Input <code>x</code></label>
+          <input type="range" id="reluSlider" min="-10" max="10" value="0" step="0.1" />
+          <span class="output-val" id="reluInput">0</span>
+        </div>
+        <div class="slider-row">
+          <label>ReLU output</label>
+          <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; position: relative;">
+            <div id="reluBar" style="height: 100%; background: var(--accent-green); border-radius: 2px; width: 0%; transition: width 0.15s;"></div>
+          </div>
+          <span class="output-val" id="reluOutput" style="color: var(--accent-green);">0</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 12 ═══════════ -->
+    <section class="section" id="s12">
+      <div class="section-number orange">11</div>
+      <h2>The most important types of Neural&nbsp;Networks</h2>
+
+      <div class="feature-grid">
+        <!-- MLP -->
+        <div class="feature-card">
+          <div class="icon blue">⬡</div>
+          <h4>MLP / Feedforward</h4>
+          <p>The simplest neural network. Information flows forward through basic layers.</p>
+          <div class="use-case">Classification, regression, tabular data</div>
+        </div>
+        <!-- CNN -->
+        <div class="feature-card">
+          <div class="icon purple">◐</div>
+          <h4>CNN</h4>
+          <p>Convolutional Neural Network. Designed especially for images — learns edges → shapes → objects.</p>
+          <div class="use-case">Image classification, face recognition, object detection</div>
+        </div>
+        <!-- RNN -->
+        <div class="feature-card">
+          <div class="icon green">⟳</div>
+          <h4>RNN</h4>
+          <p>Recurrent Neural Network. Processes sequences and maintains information from previous steps.</p>
+          <div class="use-case">Text, time series, speech, sequential data</div>
+        </div>
+        <!-- LSTM -->
+        <div class="feature-card">
+          <div class="icon orange">⧖</div>
+          <h4>LSTM / GRU</h4>
+          <p>Improved recurrent networks designed to handle longer-term dependencies.</p>
+          <div class="use-case">Time series, speech, long text sequences</div>
+        </div>
+        <!-- Transformer -->
+        <div class="feature-card">
+          <div class="icon pink">✦</div>
+          <h4>Transformer</h4>
+          <p>The foundation for modern LLMs. Uses <strong>attention</strong> to relate different parts of a sequence.</p>
+          <div class="use-case">ChatGPT, Gemini, Claude, translation, vision</div>
+        </div>
+        <!-- Autoencoder -->
+        <div class="feature-card">
+          <div class="icon teal">⟨⟩</div>
+          <h4>Autoencoder</h4>
+          <p>Compresses input to a small representation, then reconstructs it.</p>
+          <div class="use-case">Dimensionality reduction, anomaly detection</div>
+        </div>
+        <!-- GAN -->
+        <div class="feature-card">
+          <div class="icon indigo">⚔</div>
+          <h4>GAN</h4>
+          <p>Generative Adversarial Network. One network generates, another detects fakes. They compete.</p>
+          <div class="use-case">Image generation, style transfer</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 13 — TRANSFORMER DETAIL ═══════════ -->
+    <section class="section" id="s13">
+      <div class="section-number pink">12</div>
+      <h2>The Transformer & Attention</h2>
+      <p>
+        One of the most important architectures today. The key idea is <strong>attention</strong> — instead of reading sequentially, the network can focus on relevant parts of the input.
+      </p>
+
+      <div class="diagram">
+        <pre>"I went to the <span class="highlight">bank</span> because I needed <span class="accent-green">money</span>."
+
+                  <span class="accent-purple">attention</span>
+                      │
+<span class="highlight">bank</span> ←─────────────────┘
+
+<span class="accent-orange">The word "bank" attends to "money"</span>
+<span class="accent-orange">to understand it means a financial institution.</span></pre>
+      </div>
+
+      <p>Transformers power:</p>
+      <ul>
+        <li>Large Language Models (ChatGPT, Gemini, Claude)</li>
+        <li>Text generation & translation</li>
+        <li>Vision & audio processing</li>
+        <li>Multimodal AI</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 16 — SUMMARY TABLE ═══════════ -->
+    <section class="section" id="s16">
+      <div class="section-number teal">13</div>
+      <h2>The whole picture</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Neural Network</th><th>Simple Idea</th><th>Common Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>MLP / Feedforward</strong></td><td>Basic layers</td><td>Tabular data, classification, regression</td></tr>
+            <tr><td><strong>CNN</strong></td><td>Spatial patterns</td><td>Images, vision</td></tr>
+            <tr><td><strong>RNN</strong></td><td>Process sequences</td><td>Sequential data</td></tr>
+            <tr><td><strong>LSTM / GRU</strong></td><td>Better sequence memory</td><td>Time series, text</td></tr>
+            <tr><td><strong>Transformer</strong></td><td>Attention</td><td>LLMs, text, vision, audio</td></tr>
+            <tr><td><strong>Autoencoder</strong></td><td>Compress → reconstruct</td><td>Representation learning, anomalies</td></tr>
+            <tr><td><strong>GAN</strong></td><td>Generator vs discriminator</td><td>Generative image tasks</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════ SECTION 17 — PROGRESSION ═══════════ -->
+    <section class="section" id="s17">
+      <div class="section-number indigo">14</div>
+      <h2>The simplest mental model</h2>
+      <p>If you're learning neural networks from <code>m</code> and <code>b</code>, remember this progression:</p>
+
+      <div class="level-progression">
+        <div class="level-card">
+          <div class="level-label" style="color: var(--accent-blue);">Level 1</div>
+          <div class="level-title">Linear Regression</div>
+          <pre><span style="color: var(--accent-blue);">y = mx + b</span></pre>
+        </div>
+
+        <div class="level-connector" style="background: linear-gradient(var(--accent-blue), var(--accent-purple));"></div>
+
+        <div class="level-card">
+          <div class="level-label" style="color: var(--accent-purple);">Level 2</div>
+          <div class="level-title">One Neuron</div>
+          <pre><span style="color: var(--accent-purple);">z = wx + b
+y = activation(z)</span></pre>
+        </div>
+
+        <div class="level-connector" style="background: linear-gradient(var(--accent-purple), var(--accent-green));"></div>
+
+        <div class="level-card">
+          <div class="level-label" style="color: var(--accent-green);">Level 3</div>
+          <div class="level-title">Many Neurons</div>
+          <pre><span style="color: var(--accent-green);">● ● ●
+ \|/
+  |
+● ● ●</span></pre>
+        </div>
+
+        <div class="level-connector" style="background: linear-gradient(var(--accent-green), var(--accent-orange));"></div>
+
+        <div class="level-card">
+          <div class="level-label" style="color: var(--accent-orange);">Level 4</div>
+          <div class="level-title">Many Layers</div>
+          <pre><span style="color: var(--accent-orange);">Input → Layer 1 → Activation →
+Layer 2 → Activation → Output</span></pre>
+        </div>
+
+        <div class="level-connector" style="background: linear-gradient(var(--accent-orange), var(--accent-pink));"></div>
+
+        <div class="level-card">
+          <div class="level-label" style="color: var(--accent-pink);">Level 5</div>
+          <div class="level-title">Deep Learning</div>
+          <pre><span style="color: var(--accent-pink);">Millions/Billions of parameters
++ Many layers
++ Non-linear activations
++ Huge amounts of data</span></pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <p class="footer-quote">
+      "A neural network doesn't abandon <strong>y&nbsp;=&nbsp;mx&nbsp;+&nbsp;b</strong>; it takes that simple idea, gives many neurons their own weights and biases, connects them into layers, and uses activation functions to introduce non-linearity — allowing the network to learn very complex patterns."
+    </p>
+    <p class="footer-meta">
+      Neural Networks — A Visual Guide
+    </p>
+  </footer>
+
+  <!-- ═══════════ JAVASCRIPT ═══════════ -->
+  <script>
+    // ─── Scroll Progress & Section Reveal ───
+    const sections = document.querySelectorAll('.section');
+    const navProgress = document.getElementById('navProgress');
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -60px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(s => observer.observe(s));
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      navProgress.style.width = progress + '%';
+    });
+
+    // ─── Linear Regression Chart ───
+    function drawLinearChart() {
+      const canvas = document.getElementById('linearChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width, h = rect.height;
+      const pad = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotW = w - pad.left - pad.right;
+      const plotH = h - pad.top - pad.bottom;
+
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = pad.top + (plotH / 5) * i;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+      }
+      for (let i = 0; i <= 6; i++) {
+        const x = pad.left + (plotW / 6) * i;
+        ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + plotH); ctx.stroke();
+      }
+
+      // Axes labels
+      ctx.fillStyle = 'rgba(245,245,247,0.35)';
+      ctx.font = '11px Inter';
+      ctx.textAlign = 'center';
+      for (let i = 0; i <= 6; i++) {
+        ctx.fillText(i, pad.left + (plotW / 6) * i, pad.top + plotH + 20);
+      }
+      ctx.textAlign = 'right';
+      const yLabels = [0, 20, 40, 60, 80, 100];
+      for (let i = 0; i <= 5; i++) {
+        ctx.fillText(yLabels[5 - i], pad.left - 10, pad.top + (plotH / 5) * i + 4);
+      }
+      ctx.textAlign = 'center';
+      ctx.fillText('Experience (years)', w / 2, h - 5);
+      ctx.save();
+      ctx.translate(15, pad.top + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Salary (k)', 0, 0);
+      ctx.restore();
+
+      // Regression line
+      const toX = v => pad.left + (v / 6) * plotW;
+      const toY = v => pad.top + plotH - (v / 100) * plotH;
+
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(20));
+      ctx.lineTo(toX(6), toY(80));
+      ctx.strokeStyle = 'rgba(41, 151, 255, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Data points
+      const data = [[1,30],[2,40],[3,50],[4,60],[5,70]];
+      data.forEach(([x, y]) => {
+        ctx.beginPath();
+        ctx.arc(toX(x), toY(y), 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#2997ff';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(toX(x), toY(y), 8, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(41, 151, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+
+      // Prediction point
+      ctx.beginPath();
+      ctx.arc(toX(6), toY(80), 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff9f0a';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(toX(6), toY(80), 10, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 159, 10, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#ff9f0a';
+      ctx.font = '12px Inter';
+      ctx.textAlign = 'left';
+      ctx.fillText('Prediction: 80k', toX(6) + 14, toY(80) + 4);
+
+      // Formula
+      ctx.fillStyle = 'rgba(245,245,247,0.6)';
+      ctx.font = '600 13px JetBrains Mono';
+      ctx.textAlign = 'right';
+      ctx.fillText('y = 10x + 20', w - pad.right, pad.top - 10);
+    }
+
+    // ─── ReLU Chart ───
+    let vizMode = 'linear';
+
+    function setVizMode(mode) {
+      vizMode = mode;
+      document.querySelectorAll('.viz-toggle button').forEach(b => b.classList.remove('active'));
+      if (mode === 'linear') document.getElementById('btnLinear').classList.add('active');
+      else if (mode === 'relu') document.getElementById('btnRelu').classList.add('active');
+      else document.getElementById('btnBoth').classList.add('active');
+      drawReluChart();
+    }
+
+    function drawReluChart() {
+      const canvas = document.getElementById('reluChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width, h = rect.height;
+      const pad = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotW = w - pad.left - pad.right;
+      const plotH = h - pad.top - pad.bottom;
+
+      const xMin = -3, xMax = 5;
+      const yMin = -7, yMax = 7;
+
+      const toX = v => pad.left + ((v - xMin) / (xMax - xMin)) * plotW;
+      const toY = v => pad.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 1;
+      for (let y = yMin; y <= yMax; y += 2) {
+        ctx.beginPath(); ctx.moveTo(pad.left, toY(y)); ctx.lineTo(w - pad.right, toY(y)); ctx.stroke();
+      }
+      for (let x = xMin; x <= xMax; x++) {
+        ctx.beginPath(); ctx.moveTo(toX(x), pad.top); ctx.lineTo(toX(x), pad.top + plotH); ctx.stroke();
+      }
+
+      // Zero lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(toX(xMin), toY(0)); ctx.lineTo(toX(xMax), toY(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(toX(0), toY(yMin)); ctx.lineTo(toX(0), toY(yMax)); ctx.stroke();
+
+      // Labels
+      ctx.fillStyle = 'rgba(245,245,247,0.35)';
+      ctx.font = '11px Inter';
+      ctx.textAlign = 'center';
+      for (let x = xMin; x <= xMax; x++) {
+        ctx.fillText(x, toX(x), pad.top + plotH + 20);
+      }
+      ctx.textAlign = 'right';
+      for (let y = yMin; y <= yMax; y += 2) {
+        ctx.fillText(y, pad.left - 10, toY(y) + 4);
+      }
+      ctx.textAlign = 'center';
+      ctx.fillText('x', w / 2, h - 5);
+
+      // Draw lines
+      const drawLine = (fn, color, label) => {
+        ctx.beginPath();
+        for (let px = 0; px <= plotW; px++) {
+          const x = xMin + (px / plotW) * (xMax - xMin);
+          const y = fn(x);
+          if (px === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      };
+
+      const linear = x => 2 * x - 2;
+      const relu = x => Math.max(0, 2 * x - 2);
+
+      if (vizMode === 'linear' || vizMode === 'both') {
+        drawLine(linear, vizMode === 'both' ? 'rgba(41, 151, 255, 0.4)' : '#2997ff', 'Linear');
+      }
+      if (vizMode === 'relu' || vizMode === 'both') {
+        drawLine(relu, vizMode === 'both' ? '#30d158' : '#bf5af2', 'ReLU');
+      }
+
+      // Legend
+      ctx.font = '600 12px Inter';
+      if (vizMode === 'both') {
+        ctx.fillStyle = 'rgba(41, 151, 255, 0.6)';
+        ctx.fillText('— Linear (2x - 2)', w - pad.right - 80, pad.top + 16);
+        ctx.fillStyle = '#30d158';
+        ctx.fillText('— ReLU(2x - 2)', w - pad.right - 80, pad.top + 34);
+      } else if (vizMode === 'linear') {
+        ctx.fillStyle = '#2997ff';
+        ctx.textAlign = 'right';
+        ctx.fillText('z = 2x - 2', w - pad.right, pad.top - 10);
+      } else {
+        ctx.fillStyle = '#bf5af2';
+        ctx.textAlign = 'right';
+        ctx.fillText('ReLU(2x - 2)', w - pad.right, pad.top - 10);
+      }
+    }
+
+    // ─── Activation Mini Charts ───
+    function drawMiniChart(canvasId, fn, color, xRange, yRange) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width, h = rect.height;
+      const pad = 16;
+      const plotW = w - pad * 2;
+      const plotH = h - pad * 2;
+
+      // Zero line
+      const toY = v => pad + plotH - ((v - yRange[0]) / (yRange[1] - yRange[0])) * plotH;
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, toY(0));
+      ctx.lineTo(w - pad, toY(0));
+      ctx.stroke();
+
+      // Curve
+      ctx.beginPath();
+      for (let px = 0; px <= plotW; px++) {
+        const x = xRange[0] + (px / plotW) * (xRange[1] - xRange[0]);
+        const y = fn(x);
+        const cy = toY(y);
+        if (px === 0) ctx.moveTo(pad + px, cy);
+        else ctx.lineTo(pad + px, cy);
+      }
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // ─── Neural Network SVG ───
+    function drawNN() {
+      const svg = document.getElementById('nnSvg');
+      if (!svg) return;
+      const layers = [
+        { n: 3, label: 'Input', x: 80 },
+        { n: 4, label: 'Hidden 1', x: 220 },
+        { n: 4, label: 'Hidden 2', x: 360 },
+        { n: 2, label: 'Output', x: 500 }
+      ];
+
+      const colors = ['#2997ff', '#bf5af2', '#30d158', '#ff9f0a'];
+      let html = '';
+
+      // Compute node positions
+      const nodePositions = layers.map((layer, li) => {
+        const positions = [];
+        const totalH = (layer.n - 1) * 60;
+        const startY = 160 - totalH / 2;
+        for (let i = 0; i < layer.n; i++) {
+          positions.push({ x: layer.x, y: startY + i * 60 });
+        }
+        return positions;
+      });
+
+      // Draw connections
+      for (let li = 0; li < nodePositions.length - 1; li++) {
+        const from = nodePositions[li];
+        const to = nodePositions[li + 1];
+        from.forEach(f => {
+          to.forEach(t => {
+            const opacity = 0.06 + Math.random() * 0.08;
+            html += `<line x1="${f.x}" y1="${f.y}" x2="${t.x}" y2="${t.y}" stroke="rgba(255,255,255,${opacity})" stroke-width="1"/>`;
+          });
+        });
+      }
+
+      // Draw nodes
+      nodePositions.forEach((positions, li) => {
+        positions.forEach(p => {
+          html += `<circle cx="${p.x}" cy="${p.y}" r="14" fill="${colors[li]}" fill-opacity="0.15" stroke="${colors[li]}" stroke-width="1.5" stroke-opacity="0.4"/>`;
+          html += `<circle cx="${p.x}" cy="${p.y}" r="5" fill="${colors[li]}"/>`;
+        });
+        // Layer label
+        html += `<text x="${layers[li].x}" y="290" text-anchor="middle" fill="rgba(245,245,247,0.35)" font-size="11" font-family="Inter">${layers[li].label}</text>`;
+      });
+
+      svg.innerHTML = html;
+    }
+
+    // ─── Interactive ReLU Slider ───
+    const reluSlider = document.getElementById('reluSlider');
+    const reluInputEl = document.getElementById('reluInput');
+    const reluOutputEl = document.getElementById('reluOutput');
+    const reluBar = document.getElementById('reluBar');
+
+    if (reluSlider) {
+      reluSlider.addEventListener('input', () => {
+        const x = parseFloat(reluSlider.value);
+        const y = Math.max(0, x);
+        reluInputEl.textContent = x.toFixed(1);
+        reluOutputEl.textContent = y.toFixed(1);
+        reluBar.style.width = (y / 10 * 100) + '%';
+      });
+    }
+
+    // ─── Init ───
+    function initCharts() {
+      drawLinearChart();
+      drawReluChart();
+      drawNN();
+      drawMiniChart('reluMini', x => Math.max(0, x), '#2997ff', [-5, 5], [-1, 5]);
+      drawMiniChart('sigmoidMini', x => 1 / (1 + Math.exp(-x)), '#bf5af2', [-6, 6], [-0.1, 1.1]);
+      // Softmax - just show a nice curve for visual
+      drawMiniChart('softmaxMini', x => Math.exp(x) / (Math.exp(x) + Math.exp(0) + Math.exp(-x)), '#30d158', [-5, 5], [-0.05, 1.05]);
+    }
+
+    // Resize handler
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(initCharts, 200);
+    });
+
+    // Initial draw
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initCharts, 100);
+    });
+  </script>
+</body>
+</html>
