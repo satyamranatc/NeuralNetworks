@@ -1,106 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <!-- ═══════ PRIMARY SEO ═══════ -->
-  <title>Neural Networks — From y = mx + b to Deep Learning & TensorFlow | Visual Guide by Satyam Rana</title>
-  <meta name="description" content="Master neural networks from scratch — an interactive visual guide explaining why traditional machine learning fails, when we need FNNs, single neurons, TensorFlow code, backpropagation, and deep learning architectures." />
-  <meta name="keywords" content="why machine learning fails, when to use neural networks, XOR problem, neural networks, deep learning, machine learning, linear regression, tensorflow, keras, activation functions, backpropagation, feedforward neural network, FNN, CNN, RNN, LSTM, GAN, Transformer, Satyam Rana" />
+  <title>Neural Networks | Satyam Rana</title>
+  <meta name="description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
   <meta name="author" content="Satyam Rana" />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="googlebot" content="index, follow" />
   <link rel="canonical" href="https://satyamranatc.github.io/NeuralNetworks/" />
-  <meta name="theme-color" content="#000000" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <!-- ═══════ OPEN GRAPH ═══════ -->
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="Neural Networks — From y = mx + b to Deep Learning & TensorFlow" />
-  <meta property="og:description" content="A stunning interactive visual guide to understanding neural networks. Learn why traditional ML breaks down, why we need FNNs, and how simple y = mx + b transforms into deep learning." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Neural Networks | Satyam Rana" />
+  <meta property="og:description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
   <meta property="og:url" content="https://satyamranatc.github.io/NeuralNetworks/" />
-  <meta property="og:site_name" content="Satyam Rana — Neural Networks Guide" />
+  <meta property="og:site_name" content="Satyam Rana" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="https://satyamranatc.github.io/NeuralNetworks/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Neural Networks Visual Guide — From y = mx + b to Deep Learning" />
-  <meta property="article:author" content="Satyam Rana" />
-  <meta property="article:published_time" content="2026-08-19T00:00:00+05:30" />
-  <meta property="article:section" content="Machine Learning" />
-  <meta property="article:tag" content="Neural Networks" />
-  <meta property="article:tag" content="Deep Learning" />
-  <meta property="article:tag" content="TensorFlow" />
-  <meta property="article:tag" content="AI" />
 
   <!-- ═══════ TWITTER / X CARD ═══════ -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Neural Networks — From y = mx + b to Deep Learning & TensorFlow" />
-  <meta name="twitter:description" content="A stunning interactive visual guide to neural networks. From why traditional ML breaks down to TensorFlow code and Transformers." />
-  <meta name="twitter:image" content="https://satyamranatc.github.io/NeuralNetworks/og-image.png" />
-  <meta name="twitter:image:alt" content="Neural Networks Visual Guide — From y = mx + b to Deep Learning" />
-
-  <!-- ═══════ FAVICON ═══════ -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+  <meta name="twitter:title" content="Neural Networks | Satyam Rana" />
+  <meta name="twitter:description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
 
   <!-- ═══════ JSON-LD STRUCTURED DATA ═══════ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebPage",
-        "@id": "https://satyamranatc.github.io/NeuralNetworks/",
-        "url": "https://satyamranatc.github.io/NeuralNetworks/",
-        "name": "Neural Networks — From y = mx + b to Deep Learning & TensorFlow",
-        "description": "An interactive visual guide explaining why traditional machine learning fails, when FNN is needed, and how neural networks work.",
-        "inLanguage": "en",
-        "isPartOf": {
-          "@type": "WebSite",
-          "url": "https://satyamranatc.github.io/",
-          "name": "Satyam Rana"
-        },
-        "author": {
-          "@type": "Person",
-          "@id": "#author"
-        },
-        "datePublished": "2026-08-19",
-        "dateModified": "2026-08-21"
-      },
-      {
-        "@type": "Article",
-        "headline": "Neural Networks — From y = mx + b to Deep Learning & TensorFlow",
-        "description": "Master neural networks from scratch: why ML fails, single neurons, activation functions, TensorFlow FNN, backpropagation, and Transformers.",
-        "url": "https://satyamranatc.github.io/NeuralNetworks/",
-        "image": "https://satyamranatc.github.io/NeuralNetworks/og-image.png",
-        "author": {
-          "@type": "Person",
-          "@id": "#author"
-        },
-        "publisher": {
-          "@type": "Person",
-          "@id": "#author"
-        },
-        "datePublished": "2026-08-19",
-        "dateModified": "2026-08-21",
-        "mainEntityOfPage": "https://satyamranatc.github.io/NeuralNetworks/",
-        "keywords": ["why machine learning fails", "neural networks", "deep learning", "tensorflow", "keras", "linear regression", "activation functions", "CNN", "RNN", "LSTM", "Transformer"],
-        "articleSection": "Machine Learning",
-        "wordCount": 7200,
-        "inLanguage": "en"
-      },
-      {
-        "@type": "Person",
-        "@id": "#author",
-        "name": "Satyam Rana",
-        "url": "https://github.com/satyamranatc",
-        "sameAs": [
-          "https://github.com/satyamranatc"
-        ]
-      }
-    ]
+    "@type": "WebPage",
+    "url": "https://satyamranatc.github.io/NeuralNetworks/",
+    "name": "Neural Networks | Satyam Rana",
+    "description": "Explore NeuralNetworks by Satyam Rana.",
+    "publisher": {
+      "@type": "Person",
+      "name": "Satyam Rana",
+      "url": "https://satyamrana.in/"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Satyam Rana",
+      "url": "https://satyamrana.in/"
+    }
+  }
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ═══════ PRIMARY SEO ═══════ -->
+  <title>Neural Networks | Satyam Rana</title>
+  <meta name="description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
+  <meta name="author" content="Satyam Rana" />
+  <link rel="canonical" href="https://satyamranatc.github.io/NeuralNetworks/" />
+
+  <!-- ═══════ OPEN GRAPH ═══════ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Neural Networks | Satyam Rana" />
+  <meta property="og:description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
+  <meta property="og:url" content="https://satyamranatc.github.io/NeuralNetworks/" />
+  <meta property="og:site_name" content="Satyam Rana" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ═══════ TWITTER / X CARD ═══════ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Neural Networks | Satyam Rana" />
+  <meta name="twitter:description" content="Explore NeuralNetworks by Satyam Rana. A comprehensive visual guide and resource." />
+
+  <!-- ═══════ JSON-LD STRUCTURED DATA ═══════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "url": "https://satyamranatc.github.io/NeuralNetworks/",
+    "name": "Neural Networks | Satyam Rana",
+    "description": "Explore NeuralNetworks by Satyam Rana.",
+    "publisher": {
+      "@type": "Person",
+      "name": "Satyam Rana",
+      "url": "https://satyamrana.in/"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Satyam Rana",
+      "url": "https://satyamrana.in/"
+    }
   }
   </script>
 
